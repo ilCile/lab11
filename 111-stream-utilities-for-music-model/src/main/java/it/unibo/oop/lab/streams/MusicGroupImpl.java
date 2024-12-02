@@ -3,6 +3,7 @@ package it.unibo.oop.lab.streams;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.Set;
@@ -31,42 +32,48 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Stream<String> orderedSongNames() {
-        return null;
+        return songs.stream().map(Song::getSongName).sorted();
     }
 
     @Override
     public Stream<String> albumNames() {
-        return null;
+        return albums.keySet().stream();
     }
 
     @Override
     public Stream<String> albumInYear(final int year) {
-        return null;
+        return albums.entrySet().stream().filter(t -> t.getValue() == year).map(Entry::getKey);
     }
 
     @Override
     public int countSongs(final String albumName) {
-        return -1;
+        return (int) songs.stream().filter(t -> t.getAlbumName().orElse("").equals(albumName)).count();
     }
 
     @Override
     public int countSongsInNoAlbum() {
-        return -1;
+        return (int) songs.stream().filter(t -> t.getAlbumName().isEmpty()).count();
     }
 
     @Override
     public OptionalDouble averageDurationOfSongs(final String albumName) {
-        return null;
+        return OptionalDouble.of(songs.stream().filter(t -> t.getAlbumName().orElse("").equals(albumName))
+        .map(Song::getDuration).reduce((a, b) -> a + b).get() / countSongs(albumName));
     }
 
     @Override
     public Optional<String> longestSong() {
-        return null;
+        return songs.stream().max((a, b) -> (int) (a.getDuration() - b.getDuration())).map(Song::getSongName);
     }
 
     @Override
     public Optional<String> longestAlbum() {
-        return null;
+        return albums.keySet().stream().max((a, b) -> (int) (songDurationSum(a) - songDurationSum(b)));
+    }
+
+    private Double songDurationSum(final String albumName) {
+        return songs.stream().filter(t -> t.getAlbumName().orElse("").equals(albumName))
+        .map(Song::getDuration).reduce((a, b) -> a + b).get();
     }
 
     private static final class Song {
