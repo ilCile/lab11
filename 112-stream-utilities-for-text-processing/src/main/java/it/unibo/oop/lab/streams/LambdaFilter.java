@@ -6,8 +6,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
-import java.util.ArrayList;
-import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 
 import javax.swing.BorderFactory;
@@ -40,7 +39,9 @@ public final class LambdaFilter extends JFrame {
         /**
          * Commands.
          */
-        LIST_WORD("list word in alphabetical order", a -> List.of(a.split(" ")).stream().sorted().toString()),
+        LIST_COUNT_WORD("list each word with his count", a -> List.of(a.split(" ")).stream()
+        .map(w -> w + "->" + List.of(a.split(" ")).stream().filter(c -> c.equals(w)).count()).distinct().toList().toString()),
+        LIST_WORD("list word in alphabetical order", a -> List.of(a.split(" ")).stream().sorted().toList().toString()),
         COUNT_LINES("count lines", a -> Long.toString(a.lines().count())),
         COUNT_CHARS("count chars", a -> Integer.toString(a.length())),
         LOWER_CASE("lowercase", String::toLowerCase),
@@ -66,7 +67,7 @@ public final class LambdaFilter extends JFrame {
 
     private LambdaFilter() {
         super("Lambda filter GUI");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         final JPanel panel1 = new JPanel();
         final LayoutManager layout = new BorderLayout();
         panel1.setLayout(layout);
